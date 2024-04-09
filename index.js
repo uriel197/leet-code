@@ -414,3 +414,109 @@ Array.prototype.snail = function (rowsCount, colsCount) {
         new Array(rowsCount).fill(0).map((a) => [])
       );
 };
+
+/*********** COMMENTS ***********
+
+***1: Math.floor(i / rowsCount) % 2 checks if the result is even. Writing the condition as Math.floor(i / rowsCount) % 2 === 0 instead of Math.floor(i / rowsCount) % 2 would make the code more explicit and easier to understand.
+
+***2" a more intuitive way of writting the reduce function would be:
+this.reduce((acc, num, i) => {
+    acc[Math.floor(i / rowsCount)][Math.floor(i % rowsCount)] = num;
+    return acc;
+}, new Array(rowsCount).fill(0).map((a) => []));
+
+
+
+***********************  Flatten Deeply Nested Array **************************
+
+Given a multi-dimensional array arr and a depth n, return a flattened version of that array.
+
+A flattened array is a version of that array with some or all of the sub-arrays removed and replaced with the actual elements in that sub-array. This flattening operation should only be done if the current depth of nesting is less than n. The depth of the elements in the first array are considered to be 0.
+Please solve it without the built-in Array.flat method.
+
+Example 1:
+
+arr = [1, 2, 3, [4, 5, 6], [7, 8, [9, 10, 11], 12], [13, 14, 15]]
+n = 0
+Output
+[1, 2, 3, [4, 5, 6], [7, 8, [9, 10, 11], 12], [13, 14, 15]]
+
+Explanation
+Passing a depth of n=0 will always result in the original array. This is because the smallest possible depth of a subarray (0) is not less than n=0. Thus, no subarray should be flattened. 
+Example 2:
+
+arr = [1, 2, 3, [4, 5, 6], [7, 8, [9, 10, 11], 12], [13, 14, 15]]
+n = 1
+Output
+[1, 2, 3, 4, 5, 6, 7, 8, [9, 10, 11], 12, 13, 14, 15]
+
+Explanation
+The subarrays starting with 4, 7, and 13 are all flattened. This is because their depth of 0 is less than 1. However [9, 10, 11] remains unflattened because its depth is 1.
+Example 3:
+
+arr = [[1, 2, 3], [4, 5, 6], [7, 8, [9, 10, 11], 12], [13, 14, 15]]
+n = 2
+Output
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+Explanation
+The maximum depth of any subarray is 1. Thus, all of them are flattened. */
+[4, [5, 6]];
+var flat = function (arr, n, result = [], depth = 0) {
+  for (let i = 0; i < arr.length; i++) {
+    if (Array.isArray(arr[i]) && depth < n) {
+      flat(arr[i], n, result, depth + 1);
+    } else {
+      result.push(arr[i]);
+    }
+  }
+  return result;
+};
+
+// Example usage:
+const arr = [
+  [1, 2, 3],
+  [4, [5, 6]],
+  [7, [8, 9, [10, 11]]],
+];
+const n = 2;
+
+/*************** COMMENTS *****************
+
+Let's walk through the process of the flat function with the provided input arr and depth n = 2:
+The function enters the arr as [[1, 2, 3], [4, [5, 6]], [7, [8, 9, [10, 11]]]] and depth = 0.
+It initializes an empty result array result = [].
+Iterating Through Elements:
+
+For each element in arr it checks if element is an array and depth < n, if it is: 
+Element 1: Nested array [1, 2, 3].
+Enters the recursion with arr as [1, 2, 3] and depth = 1.
+Iterates through [1, 2, 3]:
+Scalar value 1 pushed into result.
+Scalar value 2 pushed into result.
+Scalar value 3 pushed into result.
+Element 2: Nested array [4, [5, 6]].
+Enters the recursion with arr as [4, [5, 6]] and depth = 1.
+Iterates through [4, [5, 6]]:  note that arr.length = 2
+Scalar value 4 pushed into result.
+Next element = Nested array [5, 6].
+Enters the recursion with arr as [5, 6] and depth = 2.
+note that depth = 2 doesnt matter because the elements inside the array are not themselves arrays.
+Iterates through [5, 6]:
+Scalar value 5 pushed into result.
+Scalar value 6 pushed into result.
+Element 3: Nested array [7, [8, 9, [10, 11]]].
+Enters the recursion with arr as [7, [8, 9, [10, 11]]] and depth = 1.
+Iterates through [7, [8, 9, [10, 11]]]:  arr.length = 2
+Scalar value 7 pushed into result.
+Next element is a Nested array [8, 9, [10, 11]].
+Since depth = 1, and 1 < n.
+Enters the recursion with arr as [8, 9, [10, 11]] and depth = 2.
+Iterates through [8, 9, [10, 11]]:
+Scalar value 8 pushed into result.
+Scalar value 9 pushed into result.
+Next element is a Nested array [10, 11] and since depth = 2,
+it pushes the whole array unmodified into result.
+
+The flat function returns the flattened array [1, 2, 3, 4, 5, 6, 7, 8, 9, [10, 11]] as the final result.
+*/
